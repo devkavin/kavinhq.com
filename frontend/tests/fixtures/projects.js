@@ -1,0 +1,4 @@
+export const projectList = [
+  { id: 1, title: "ApexMetrics", slug: "apexmetrics", description: "Analytics made clear for growing teams.", category: "Custom Apps", image_url: "https://images.unsplash.com/one.jpg", live_url: "https://apex.kavinhq.com", gallery: ["https://images.unsplash.com/g1.jpg", "https://images.unsplash.com/g2.jpg"], story: "A complex starting point.\n\nA clear finished system.", stack: "React, FastAPI", year: 2025, featured: true, sort_order: 1, created_at: "2026-01-01T00:00:00Z" },
+  { id: 2, title: "Vanguard", slug: "vanguard", description: "A fast headless shop for an independent label.", category: "E-Commerce", image_url: "https://images.unsplash.com/two.jpg", live_url: "https://vanguard.kavinhq.com", gallery: [], story: "The store needed speed.\n\nThe new build converted better.", stack: "React, Tailwind CSS", year: 2024, featured: true, sort_order: 2, created_at: "2026-01-02T00:00:00Z" },
+];
