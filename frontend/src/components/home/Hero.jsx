@@ -107,8 +107,8 @@ export default function Hero() {
         </div>
         <div className="visual-scan" />
       </TiltVisual>
-      <div className="floating-badge badge-top glass">SEO-FIRST BUILDS</div>
-      <div className="floating-badge badge-bottom glass">DOCKER-HOSTED<br/>DONE-FOR-YOU</div>
+      <div className="floating-badge badge-top glass"><span className="badge-dot" /> SEO-FIRST BUILDS</div>
+      <div className="floating-badge badge-bottom glass"><span className="badge-dot dot-cyan" /> DOCKER HOSTED • DONE-FOR-YOU</div>
     </div>
     <div className="hero-index">001 / KAVINHQ</div>
   </section>;
