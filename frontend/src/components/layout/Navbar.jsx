@@ -13,7 +13,17 @@ export default function Navbar() {
   const [open, setOpen] = useState(false);
   const menuButtonRef = useRef(null);
   const [scrolled, setScrolled] = useState(false);
-  useEffect(() => { const update = () => setScrolled(window.scrollY > 24); update(); window.addEventListener("scroll", update); return () => window.removeEventListener("scroll", update); }, []);
+  useEffect(() => {
+    let ticking = false;
+    const update = () => {
+      if (ticking) return;
+      ticking = true;
+      requestAnimationFrame(() => { setScrolled(window.scrollY > 24); ticking = false; });
+    };
+    update();
+    window.addEventListener("scroll", update, { passive: true });
+    return () => window.removeEventListener("scroll", update);
+  }, []);
   return <>
     <header className={`site-nav ${scrolled ? "is-scrolled" : ""}`}>
       <Link to="/" data-testid="nav-logo" aria-label="KAVINHQ home"><Logo /></Link>

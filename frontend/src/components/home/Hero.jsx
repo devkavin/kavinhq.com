@@ -32,7 +32,7 @@ export default function Hero() {
     </div>
     <div className="hero-visual-wrap">
       <TiltVisual className="hero-visual glass">
-        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?crop=entropy&cs=srgb&fm=jpg&q=85" alt="A dark web development workspace" />
+        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?crop=entropy&cs=srgb&fm=webp&q=80&w=900" alt="A dark web development workspace" width="900" height="600" fetchpriority="high" />
         <div className="visual-scan" />
       </TiltVisual>
       <div className="floating-badge badge-top glass">SEO-FIRST BUILDS</div>

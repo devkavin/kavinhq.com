@@ -12,7 +12,8 @@ router = APIRouter()
 
 
 @router.get("/projects", response_model=list[ProjectRead])
-def list_projects(category: str | None = None, featured: bool | None = None, db: Session = Depends(get_db)):
+def list_projects(category: str | None = None, featured: bool | None = None, db: Session = Depends(get_db), response: Response = None):
+    response.headers["Cache-Control"] = "public, max-age=60, stale-while-revalidate=300"
     query = select(Project)
     if category:
         query = query.where(Project.category == category)

@@ -9,6 +9,7 @@ import PageTransition from "./components/layout/PageTransition";
 import CustomCursor from "./components/motion/CustomCursor";
 import ScrollProgress from "./components/motion/ScrollProgress";
 import { AuthProvider } from "./context/AuthContext";
+import { ReducedMotionProvider } from "./context/ReducedMotionContext";
 import { SettingsProvider } from "./context/SettingsContext";
 import useLenis from "./hooks/useLenis";
 import HomePage from "./pages/HomePage";
@@ -44,5 +45,5 @@ export function AppRoutes() {
 }
 
 export default function App() {
-  return <HelmetProvider><BrowserRouter><AuthProvider><SettingsProvider><AppRoutes /></SettingsProvider></AuthProvider></BrowserRouter></HelmetProvider>;
+  return <HelmetProvider><BrowserRouter><ReducedMotionProvider><AuthProvider><SettingsProvider><AppRoutes /></SettingsProvider></AuthProvider></ReducedMotionProvider></BrowserRouter></HelmetProvider>;
 }

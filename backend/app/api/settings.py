@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, Response
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -18,7 +18,8 @@ def read_settings(db: Session) -> dict[str, str]:
 
 
 @router.get("/settings", response_model=SettingsRead)
-def get_settings(db: Session = Depends(get_db)):
+def get_settings(db: Session = Depends(get_db), response: Response = None):
+    response.headers["Cache-Control"] = "public, max-age=300, stale-while-revalidate=600"
     return read_settings(db)
 
 
