@@ -4,6 +4,7 @@ import { tmpdir } from "node:os";
 import { join, resolve } from "node:path";
 
 const siteBase = (process.env.KAVINHQ_SITE_BASE || "http://127.0.0.1:5173").replace(/\/$/, "");
+const apiBase = (process.env.KAVINHQ_API_BASE || siteBase).replace(/\/$/, "");
 const adminEmail = process.env.ADMIN_EMAIL;
 const adminPassword = process.env.ADMIN_PASSWORD;
 const screenshotDir = resolve("artifacts", "screenshots");
@@ -178,6 +179,46 @@ async function click(client, selector) {
   })()`);
 }
 
+async function setCheckbox(client, selector, checked) {
+  await evaluate(client, `(() => {
+    const element = document.querySelector(${JSON.stringify(selector)});
+    if (!element) throw new Error(${JSON.stringify(`Missing checkbox: ${selector}`)});
+    if (element.checked !== ${Boolean(checked)}) element.click();
+  })()`);
+}
+
+async function verifyHomeInteractions(client) {
+  const state = await evaluate(client, `(() => {
+    const marquee = document.querySelector(".marquee-track");
+    const card = document.querySelector(".spotlight-card");
+    const box = card?.getBoundingClientRect();
+    if (card && box) card.dispatchEvent(new MouseEvent("mousemove", { bubbles: true, clientX: box.left + 24, clientY: box.top + 24 }));
+    const animation = marquee ? getComputedStyle(marquee) : null;
+    return {
+      marqueeGroups: marquee?.querySelectorAll(":scope > .marquee-group").length || 0,
+      marqueeItems: marquee?.querySelectorAll(".marquee-group > span").length || 0,
+      duplicateHidden: marquee?.querySelector('[data-testid="marquee-copy"]')?.getAttribute("aria-hidden") === "true",
+      animationName: animation?.animationName || "",
+      animationDuration: animation?.animationDuration || "",
+      spotlightX: card?.style.getPropertyValue("--mx") || "",
+      spotlightY: card?.style.getPropertyValue("--my") || "",
+    };
+  })()`);
+  if (state.marqueeGroups !== 2 || state.marqueeItems < 16 || !state.duplicateHidden || state.animationName !== "marquee" || state.animationDuration !== "48s") throw new Error(`Marquee verification failed: ${JSON.stringify(state)}`);
+  if (!state.spotlightX || !state.spotlightY) throw new Error("Spotlight card did not respond to pointer movement");
+}
+
+async function verifyCaseGallery(client, mobile) {
+  const state = await evaluate(client, `(() => {
+    const gallery = document.querySelector(".case-gallery");
+    const items = [...document.querySelectorAll(".gallery-item")];
+    return { display: gallery ? getComputedStyle(gallery).display : "", widths: items.map((item) => Math.round(item.getBoundingClientRect().width)) };
+  })()`);
+  if (state.display !== "grid" || state.widths.length < 2) throw new Error(`Case gallery verification failed: ${JSON.stringify(state)}`);
+  if (mobile && Math.abs(state.widths[0] - state.widths[1]) > 2) throw new Error(`Mobile gallery did not collapse evenly: ${JSON.stringify(state.widths)}`);
+  if (!mobile && state.widths[0] <= state.widths[1]) throw new Error(`Desktop gallery did not keep the 7/5 layout: ${JSON.stringify(state.widths)}`);
+}
+
 async function verifyContactPreview(client) {
   await navigate(client, "/contact");
   await waitFor(() => evaluate(client, `Boolean(document.querySelector('[data-testid="contact-name"]'))`), "contact form inputs");
@@ -190,6 +231,7 @@ async function verifyContactPreview(client) {
 }
 
 async function verifyAdmin(client, viewportName) {
+  const verificationSlug = `browser-verification-${viewportName}`;
   await navigate(client, "/admin");
   await setInput(client, "#admin-email", adminEmail);
   await setInput(client, "#admin-password", adminPassword);
@@ -207,11 +249,40 @@ async function verifyAdmin(client, viewportName) {
   await click(client, '[data-testid="admin-add-project"]');
   await waitFor(() => evaluate(client, 'Boolean(document.querySelector("[role=dialog]"))'), "project modal");
   await capture(client, "admin-project-modal", viewportName);
-  await click(client, '[data-testid="admin-project-modal-close"]');
+  await setInput(client, '[data-testid="admin-project-title"]', "Browser Verification Project");
+  await setInput(client, '[data-testid="admin-project-slug"]', verificationSlug);
+  await setInput(client, '[data-testid="admin-project-category"]', "Custom Apps & Fixing");
+  await setInput(client, '[data-testid="admin-project-year"]', "2026");
+  await setInput(client, '[data-testid="admin-project-description"]', "Temporary project created by the browser verification flow.");
+  await setInput(client, '[data-testid="admin-project-image"]', "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=srgb&fm=jpg&q=85");
+  await setInput(client, '[data-testid="admin-project-live"]', "https://browser-verification.kavinhq.com");
+  await setInput(client, '[data-testid="admin-project-stack"]', "React, FastAPI");
+  await setInput(client, '[data-testid="admin-project-order"]', "99");
+  await setInput(client, '[data-testid="admin-project-gallery"]', "https://images.unsplash.com/photo-1551288049-bebda4e38f71?crop=entropy&cs=srgb&fm=jpg&q=85");
+  await setInput(client, '[data-testid="admin-project-story"]', "Verification challenge.\n\nVerification result.");
+  await setCheckbox(client, '[data-testid="admin-project-featured"]', false);
+  await click(client, '[data-testid="admin-project-save"]');
+  await waitFor(() => evaluate(client, `Boolean(document.querySelector('[data-testid="admin-delete-${verificationSlug}"]'))`), "created project row", 15000);
+
+  await click(client, `[data-testid="admin-edit-${verificationSlug}"]`);
+  await waitFor(() => evaluate(client, 'Boolean(document.querySelector("[role=dialog]"))'), "edit project modal");
+  await setInput(client, '[data-testid="admin-project-title"]', "Browser Verification Project Updated");
+  await click(client, '[data-testid="admin-project-save"]');
+  await waitFor(() => evaluate(client, `[...document.querySelectorAll(".admin-project-row h3")].some((item) => item.textContent.includes("Updated"))`), "updated project row", 15000);
+
+  await click(client, `[data-testid="admin-delete-${verificationSlug}"]`);
+  const armedLabel = await evaluate(client, `document.querySelector('[data-testid="admin-delete-${verificationSlug}"]')?.textContent || ""`);
+  if (!armedLabel.includes("Confirm delete")) throw new Error("Project deletion did not require confirmation");
+  await click(client, `[data-testid="admin-delete-${verificationSlug}"]`);
+  await waitFor(() => evaluate(client, `!document.querySelector('[data-testid="admin-delete-${verificationSlug}"]')`), "deleted project row", 15000);
 
   await click(client, '[data-testid="admin-tab-settings"]');
   await waitFor(() => evaluate(client, 'Boolean(document.querySelector(\'[data-testid="admin-settings-form"]\'))'), "settings tab");
   await capture(client, "admin-settings", viewportName);
+  await click(client, '[data-testid="admin-settings-save"]');
+  await sleep(400);
+  await click(client, '[data-testid="admin-logout"]');
+  await waitFor(() => evaluate(client, 'location.pathname === "/admin"'), "admin logout", 10000);
 }
 
 async function verifyViewport(chromePath, viewport) {
@@ -227,6 +298,7 @@ async function verifyViewport(chromePath, viewport) {
     "about:blank",
   ], { stdio: "ignore", windowsHide: true });
   let client;
+  let verificationError;
 
   try {
     const target = await openTarget(viewport.port);
@@ -252,7 +324,9 @@ async function verifyViewport(chromePath, viewport) {
         const cursor = await evaluate(client, `({ fine: matchMedia("(pointer: fine)").matches, present: Boolean(document.querySelector(".cursor-dot")) })`);
         if (!viewport.mobile && (!cursor.fine || !cursor.present)) throw new Error("Desktop custom cursor did not render in fine-pointer mode");
         if (viewport.mobile && cursor.present) throw new Error("Custom cursor rendered in mobile touch mode");
+        await verifyHomeInteractions(client);
       }
+      if (name === "case-study") await verifyCaseGallery(client, viewport.mobile);
       await capture(client, name, viewport.name);
     }
 
@@ -270,12 +344,37 @@ async function verifyViewport(chromePath, viewport) {
     await client.send("Emulation.setEmulatedMedia", { features: [{ name: "prefers-reduced-motion", value: "no-preference" }] });
 
     await verifyAdmin(client, viewport.name);
+  } catch (error) {
+    verificationError = error;
+    throw error;
   } finally {
+    let cleanupError;
+    if (client) {
+      try {
+        const cleanup = await evaluate(client, `(async () => {
+          const response = await fetch(${JSON.stringify(`${apiBase}/api/projects`)}, { credentials: "include" });
+          if (!response.ok) throw new Error("Project cleanup lookup failed with status " + response.status);
+          const projects = await response.json();
+          const temporary = projects.find((project) => project.slug === ${JSON.stringify(`browser-verification-${viewport.name}`)});
+          if (!temporary) return { deleted: false };
+          const deleted = await fetch(${JSON.stringify(`${apiBase}/api/projects/`)} + temporary.id, { method: "DELETE", credentials: "include" });
+          if (!deleted.ok) throw new Error("Project cleanup delete failed with status " + deleted.status);
+          return { deleted: true };
+        })()`);
+        if (cleanup?.deleted) console.log(`CLEANUP  ${viewport.name}/temporary-project`);
+      } catch (error) {
+        cleanupError = error;
+      }
+    }
     client?.close();
     processHandle.kill();
     await sleep(300);
     const safePrefix = resolve(tmpdir()).toLowerCase();
     if (resolve(userDataDir).toLowerCase().startsWith(safePrefix)) await rm(userDataDir, { recursive: true, force: true });
+    if (cleanupError) {
+      if (verificationError) console.error(`CLEANUP FAILED after verification error: ${cleanupError.message}`);
+      else throw cleanupError;
+    }
   }
 }
 

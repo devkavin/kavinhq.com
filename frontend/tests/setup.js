@@ -8,6 +8,8 @@ class IntersectionObserverStub {
 
 globalThis.IntersectionObserver = IntersectionObserverStub;
 globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
+window.scrollTo = () => {};
+Element.prototype.scrollIntoView = () => {};
 
 window.matchMedia ||= (query) => ({
   matches: false,

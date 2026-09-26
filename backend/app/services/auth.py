@@ -35,6 +35,8 @@ def authenticate(session: Session, identifier: str, email: str, password: str, n
             locked_until = locked_until.replace(tzinfo=timezone.utc)
         if locked_until > now:
             raise LoginLocked
+        attempt.failures = 0
+        attempt.locked_until = None
 
     user = session.scalar(select(AdminUser).where(AdminUser.email == email.strip().lower()))
     if not user or not verify_password(password, user.password_hash):

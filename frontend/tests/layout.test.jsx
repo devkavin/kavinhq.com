@@ -10,12 +10,20 @@ test("navigation exposes active state and mobile menu controls", async () => {
   expect(screen.getByTestId("nav-link-portfolio")).toHaveAttribute("aria-current", "page");
   fireEvent.click(screen.getByTestId("nav-mobile-toggle"));
   expect(screen.getByTestId("mobile-menu")).toBeInTheDocument();
-  fireEvent.click(screen.getByTestId("mobile-menu-close"));
+  expect(screen.getByTestId("mobile-menu-close")).toHaveFocus();
+  fireEvent.keyDown(document, { key: "Tab", shiftKey: true });
+  expect(screen.getByTestId("mobile-link-contact")).toHaveFocus();
+  fireEvent.keyDown(document, { key: "Tab" });
+  expect(screen.getByTestId("mobile-menu-close")).toHaveFocus();
+  fireEvent.keyDown(document, { key: "Escape" });
   await waitFor(() => expect(screen.queryByTestId("mobile-menu")).not.toBeInTheDocument());
+  expect(screen.getByTestId("nav-mobile-toggle")).toHaveFocus();
 });
 
-test("seo writes a unique document title and description", async () => {
-  render(<HelmetProvider><Seo title="Portfolio" description="Selected KAVINHQ work." /></HelmetProvider>);
+test("seo writes title, description, canonical URL and open graph URL", async () => {
+  render(<HelmetProvider><MemoryRouter initialEntries={["/portfolio/apexmetrics"]}><Seo title="Portfolio" description="Selected KAVINHQ work." /></MemoryRouter></HelmetProvider>);
   await waitFor(() => expect(document.title).toBe("Portfolio | KAVINHQ"));
   expect(document.querySelector('meta[name="description"]')).toHaveAttribute("content", "Selected KAVINHQ work.");
+  expect(document.querySelector('link[rel="canonical"]')).toHaveAttribute("href", "http://localhost:3000/portfolio/apexmetrics");
+  expect(document.querySelector('meta[property="og:url"]')).toHaveAttribute("content", "http://localhost:3000/portfolio/apexmetrics");
 });

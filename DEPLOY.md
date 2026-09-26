@@ -1,6 +1,6 @@
 # KAVINHQ deployment guide
 
-The production stack contains a FastAPI container and an nginx container. MySQL stays external. Startup can create tables only if missing and can add missing columns after checking `information_schema`. It never creates or drops a database and never replaces an existing admin password.
+The production stack contains a FastAPI container and an nginx container. MySQL stays external. Startup can create tables only if missing and can add missing columns after checking `information_schema`. It never creates or drops a database and never replaces an existing admin password. Before changing any table, startup preflights all managed tables. If a populated legacy table is missing an identity or required content column, or its primary key is incompatible, startup stops without applying partial changes and reports that an operator-reviewed migration is required.
 
 ## Required environment variables
 
@@ -58,4 +58,4 @@ On startup the backend checks its required tables and columns. It seeds the init
 
 Run the automated API check only against a database where creating and deleting its temporary `verification-project` record is acceptable. Set `KAVINHQ_API_BASE`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD`, then run `powershell -ExecutionPolicy Bypass -File scripts/verify-api.ps1`. The script restores the prior WhatsApp settings and removes its temporary project in a cleanup block.
 
-For visual checks, set `KAVINHQ_SITE_BASE` to the running frontend and run `node scripts/verify-ui.mjs`. It captures public pages, the missing-project state, contact preview, login, project modal, settings tab, and reduced-motion state at the required desktop and mobile viewports. Use `KAVINHQ_VIEWPORT=desktop` or `KAVINHQ_VIEWPORT=mobile` for a targeted rerun.
+For visual checks, use a database where temporary project creation and deletion are acceptable. Set `KAVINHQ_SITE_BASE` to the running frontend and run `node scripts/verify-ui.mjs`. Cleanup uses the frontend's `/api` proxy by default. Set `KAVINHQ_API_BASE` only when a development frontend does not expose that proxy. The script verifies project creation, editing, confirmed deletion, settings save, logout, public pages, the missing-project state, contact preview, and reduced motion at both required viewports. Cleanup failures are reported. Use `KAVINHQ_VIEWPORT=desktop` or `KAVINHQ_VIEWPORT=mobile` for a targeted rerun.

@@ -2,6 +2,15 @@ import { normalizeApiError } from "./errors";
 
 export const API_BASE = import.meta.env.VITE_API_BASE || "";
 
+export class ApiError extends Error {
+  constructor(message, status, body) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+    this.body = body;
+  }
+}
+
 async function parseResponse(response) {
   if (response.status === 204) return null;
   const text = await response.text();
@@ -21,6 +30,6 @@ export async function apiRequest(path, options = {}, allowRefresh = false) {
     if (refresh.ok) return apiRequest(path, options, false);
   }
   const body = await parseResponse(response);
-  if (!response.ok) throw new Error(normalizeApiError(body));
+  if (!response.ok) throw new ApiError(normalizeApiError(body), response.status, body);
   return body;
 }

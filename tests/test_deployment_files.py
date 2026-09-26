@@ -24,8 +24,14 @@ def test_nginx_serves_spa_assets_and_proxies_the_api():
 
     assert "try_files $uri $uri/ /index.html" in nginx
     assert "proxy_pass http://backend:8001" in nginx
+    assert "map $http_x_forwarded_proto $kavinhq_forwarded_proto" in nginx
+    assert "proxy_set_header X-Forwarded-Proto $kavinhq_forwarded_proto" in nginx
     assert "gzip on" in nginx
     assert "expires 30d" in nginx
+    assert "location = /index.html" in nginx
+    assert "expires -1" in nginx
+    for header in ("X-Content-Type-Options", "X-Frame-Options", "Content-Security-Policy", "Referrer-Policy", "Permissions-Policy"):
+        assert f"add_header {header}" in nginx
 
 
 def test_compose_uses_external_database_configuration_only():

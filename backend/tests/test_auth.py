@@ -13,6 +13,7 @@ from app.core.security import create_token, decode_token, hash_password
 from app.db.session import get_db
 from app.models import AdminUser, LoginAttempt
 from app.models.base import Base
+from app.services.auth import InvalidCredentials, authenticate
 
 TEST_SECRET = "test-secret-that-is-at-least-32-bytes-long"
 
@@ -92,3 +93,30 @@ def test_https_login_marks_cookie_secure(auth_client):
     client, _, _ = auth_client
     response = client.post("https://testserver/api/auth/login", json={"email": "admin@kavinhq.com", "password": "correct-password"})
     assert "Secure" in response.headers["set-cookie"]
+
+
+def test_forwarded_https_is_trusted_only_when_enabled(auth_client):
+    client, _, app = auth_client
+    headers = {"X-Forwarded-Proto": "https"}
+    payload = {"email": "admin@kavinhq.com", "password": "correct-password"}
+
+    untrusted = client.post("http://testserver/api/auth/login", json=payload, headers=headers)
+    assert "Secure" not in untrusted.headers["set-cookie"]
+
+    app.state.settings.trust_proxy_headers = True
+    trusted = client.post("http://testserver/api/auth/login", json=payload, headers=headers)
+    assert "Secure" in trusted.headers["set-cookie"]
+
+
+def test_expired_lockout_starts_a_fresh_failure_window(auth_client):
+    _, session_factory, _ = auth_client
+    identifier = "testclient:admin@kavinhq.com"
+    now = datetime.now(timezone.utc)
+    with session_factory() as session:
+        session.add(LoginAttempt(identifier=identifier, failures=5, locked_until=now - timedelta(seconds=1)))
+        session.commit()
+        with pytest.raises(InvalidCredentials):
+            authenticate(session, identifier, "admin@kavinhq.com", "wrong", now=now)
+        attempt = session.get(LoginAttempt, identifier)
+        assert attempt.failures == 1
+        assert attempt.locked_until is None
