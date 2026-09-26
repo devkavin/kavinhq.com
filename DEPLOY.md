@@ -53,3 +53,9 @@ Use the TLS settings supplied by the database host. PyMySQL accepts URL query pa
 ## Non-destructive startup
 
 On startup the backend checks its required tables and columns. It seeds the initial admin only when `admin_users` is empty, six replaceable projects only when `projects` is empty, and default WhatsApp settings only when `settings` is empty. Existing records and passwords are preserved.
+
+## Release verification
+
+Run the automated API check only against a database where creating and deleting its temporary `verification-project` record is acceptable. Set `KAVINHQ_API_BASE`, `ADMIN_EMAIL`, and `ADMIN_PASSWORD`, then run `powershell -ExecutionPolicy Bypass -File scripts/verify-api.ps1`. The script restores the prior WhatsApp settings and removes its temporary project in a cleanup block.
+
+For visual checks, set `KAVINHQ_SITE_BASE` to the running frontend and run `node scripts/verify-ui.mjs`. It captures public pages, the missing-project state, contact preview, login, project modal, settings tab, and reduced-motion state at the required desktop and mobile viewports. Use `KAVINHQ_VIEWPORT=desktop` or `KAVINHQ_VIEWPORT=mobile` for a targeted rerun.

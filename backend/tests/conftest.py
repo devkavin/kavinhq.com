@@ -1,9 +1,18 @@
+import os
+
 import pytest
 from fastapi.testclient import TestClient
 from sqlalchemy import create_engine
 from sqlalchemy.pool import StaticPool
 
 from app.core.config import Settings
+os.environ.setdefault("DATABASE_URL", "sqlite://")
+os.environ.setdefault("JWT_SECRET", "pytest-import-secret")
+os.environ.setdefault("ADMIN_EMAIL", "pytest-import@example.com")
+os.environ.setdefault("ADMIN_PASSWORD", "pytest-import-password")
+os.environ.setdefault("FRONTEND_URL", "https://pytest.kavinhq.test")
+os.environ.setdefault("CORS_ORIGINS", "https://pytest.kavinhq.test")
+
 from server import create_app
 
 

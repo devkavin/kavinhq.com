@@ -1,7 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { HelmetProvider } from "react-helmet-async";
-import { MemoryRouter } from "react-router-dom";
+import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { vi } from "vitest";
 import { AuthProvider } from "../src/context/AuthContext";
 import AdminRoutes from "../src/admin/AdminRoutes";
@@ -17,7 +17,7 @@ test("admin login restores session and enters the protected dashboard", async ()
     return Promise.resolve(new Response(JSON.stringify({ whatsapp_number: "15550192834", whatsapp_message: "Hello" }), { status: 200, headers: { "Content-Type": "application/json" } }));
   });
   vi.stubGlobal("fetch", fetchMock);
-  render(<HelmetProvider><MemoryRouter initialEntries={["/admin"]}><AuthProvider><AdminRoutes/></AuthProvider></MemoryRouter></HelmetProvider>);
+  render(<HelmetProvider><MemoryRouter initialEntries={["/admin"]}><AuthProvider><Routes><Route path="/admin/*" element={<AdminRoutes/>}/></Routes></AuthProvider></MemoryRouter></HelmetProvider>);
   await waitFor(() => expect(screen.getByLabelText("Email")).toBeInTheDocument());
   fireEvent.change(screen.getByLabelText("Email"), { target: { value: "admin@kavinhq.com" } });
   fireEvent.change(screen.getByLabelText("Password"), { target: { value: "correct-password" } });

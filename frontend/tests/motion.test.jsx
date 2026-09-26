@@ -1,5 +1,7 @@
 import React from "react";
 import { fireEvent, render, screen } from "@testing-library/react";
+import { MemoryRouter } from "react-router-dom";
+import Hero from "../src/components/home/Hero";
 import CustomCursor from "../src/components/motion/CustomCursor";
 import MagneticButton from "../src/components/motion/MagneticButton";
 import Marquee from "../src/components/motion/Marquee";
@@ -22,6 +24,14 @@ test("reduced motion removes the custom cursor and keeps scramble text stable", 
   const { container } = render(<><CustomCursor /><ScrambleLabel text="01 / SELECTED WORK" /></>);
   expect(container.querySelector(".cursor-dot")).not.toBeInTheDocument();
   expect(screen.getByText("01 / SELECTED WORK")).toBeInTheDocument();
+});
+
+test("reduced motion renders every hero line in its final position", () => {
+  setReducedMotion(true);
+  const { container } = render(<MemoryRouter><Hero /></MemoryRouter>);
+  const lines = [...container.querySelectorAll(".heading-mask > span")];
+  expect(lines).toHaveLength(3);
+  expect(lines.every((line) => !line.style.transform || line.style.transform === "none")).toBe(true);
 });
 
 test("magnetic wrapper preserves keyboard button activation", () => {

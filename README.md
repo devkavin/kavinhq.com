@@ -18,6 +18,8 @@ The public site is available at `http://localhost:5173`. The admin login is at `
 
 Run backend checks with `python -m pytest backend/tests -v` and frontend checks with `corepack yarn --cwd frontend test --run`. Build the frontend with `corepack yarn --cwd frontend build`.
 
+With the API running, execute `powershell -ExecutionPolicy Bypass -File scripts/verify-api.ps1` to check authentication, project CRUD, settings, cleanup, and the unauthenticated write path. With both development servers running, execute `node scripts/verify-ui.mjs` to validate every public page and admin state at 1440 by 900 and 390 by 844. Screenshots are written to `artifacts/screenshots` and ignored by Git.
+
 ## Docker compose
 
 Copy `.env.example` to `.env`, provide the hosted MySQL URL and secrets, then run `docker compose up --build`. The public site is served at `http://localhost`.

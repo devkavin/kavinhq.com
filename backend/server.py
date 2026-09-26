@@ -12,7 +12,7 @@ from app.services.seeding import seed_if_empty
 
 
 def create_app(app_settings: Settings | None = None, db_engine: Engine | None = None) -> FastAPI:
-    app_settings = app_settings or Settings.from_env(require_secrets=False)
+    app_settings = app_settings or Settings.from_env()
     db_engine = db_engine or create_engine(app_settings.database_url, pool_pre_ping=True)
     factory = sessionmaker(bind=db_engine, autoflush=False, expire_on_commit=False)
 
