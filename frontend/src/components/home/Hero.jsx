@@ -1,4 +1,4 @@
-import React, { useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useMotionTemplate, useMotionValue, useScroll, useSpring, useTransform } from "framer-motion";
 import { ArrowDownRight, CheckCircle2, Lock, MessageCircle, Terminal, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
@@ -7,6 +7,57 @@ import useReducedMotionPreference from "../../hooks/useReducedMotionPreference";
 import { buildWhatsAppUrl } from "../../lib/whatsapp";
 import MagneticButton from "../motion/MagneticButton";
 import TiltVisual from "../motion/TiltVisual";
+
+const GLYPHS = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+
+function KineticDemand({ text, reduced }) {
+  const [display, setDisplay] = useState(text);
+  const isRunning = useRef(false);
+
+  const triggerScramble = () => {
+    if (reduced || isRunning.current) return;
+    isRunning.current = true;
+    let iteration = 0;
+    const maxIterations = 14;
+    const interval = setInterval(() => {
+      iteration += 1;
+      setDisplay(
+        text
+          .split("")
+          .map((char, idx) => {
+            if (char === " " || idx < (iteration / maxIterations) * text.length) {
+              return char;
+            }
+            return GLYPHS[Math.floor(Math.random() * GLYPHS.length)];
+          })
+          .join("")
+      );
+      if (iteration >= maxIterations) {
+        clearInterval(interval);
+        setDisplay(text);
+        isRunning.current = false;
+      }
+    }, 28);
+  };
+
+  useEffect(() => {
+    if (reduced) return;
+    const timer = setTimeout(triggerScramble, 450);
+    return () => clearTimeout(timer);
+  }, [reduced]);
+
+  return (
+    <span
+      className="text-iridescent"
+      onMouseEnter={triggerScramble}
+      onTouchStart={triggerScramble}
+      data-cursor="DECRYPT"
+      title="Hover or tap to decrypt"
+    >
+      {display}
+    </span>
+  );
+}
 
 export default function Hero() {
   const settings = useSettings();
@@ -23,7 +74,7 @@ export default function Hero() {
     <motion.div className="hero-orb" style={reduced ? undefined : { y: orbY }} aria-hidden="true" />
     <div className="hero-copy">
       <div className="availability"><span /> AVAILABLE FOR NEW PROJECTS</div>
-      <h1 aria-label="WEBSITES THAT DEMAND ATTENTION.">{lines.map((line, index) => <span className="heading-mask" key={line}><motion.span className={line === "DEMAND" ? "text-cyan-bloom" : ""} initial={reduced ? false : { y: "112%" }} animate={{ y: 0 }} transition={reduced ? { duration: 0 } : { delay: .12 + index * .1, duration: .9, ease: [0.16,1,.3,1] }}>{line}</motion.span></span>)}</h1>
+      <h1 aria-label="WEBSITES THAT DEMAND ATTENTION.">{lines.map((line, index) => <span className="heading-mask" key={line}><motion.span initial={reduced ? false : { y: "112%" }} animate={{ y: 0 }} transition={reduced ? { duration: 0 } : { delay: .12 + index * .1, duration: .9, ease: [0.16,1,.3,1] }}>{line === "DEMAND" ? <KineticDemand text="DEMAND" reduced={reduced} /> : line}</motion.span></span>)}</h1>
       <motion.p initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduced ? { duration: 0 } : { delay: .55 }}>I'm Kavin. I design and engineer landing pages, e-commerce stores and custom web experiences that are fast, SEO-ready and impossible to scroll past.</motion.p>
       <motion.div className="hero-actions" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={reduced ? { duration: 0 } : { delay: .7 }}>
         <MagneticButton><a className="button button-primary" href={buildWhatsAppUrl(settings.whatsapp_number, settings.whatsapp_message)} target="_blank" rel="noreferrer" data-testid="hero-cta-whatsapp" data-cursor="CHAT"><MessageCircle size={16}/> Start a Project</a></MagneticButton>
