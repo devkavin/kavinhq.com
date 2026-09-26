@@ -1,4 +1,4 @@
-import React from "react";
+import React, { lazy, Suspense } from "react";
 import { AnimatePresence } from "framer-motion";
 import { HelmetProvider } from "react-helmet-async";
 import { BrowserRouter, Route, Routes, useLocation } from "react-router-dom";
@@ -19,13 +19,16 @@ import AboutPage from "./pages/AboutPage";
 import ServicesPage from "./pages/ServicesPage";
 import ContactPage from "./pages/ContactPage";
 
+const AdminRoutes = lazy(() => import("./admin/AdminRoutes"));
+
 function Placeholder({ name }) { return <PageTransition><main className="placeholder-page"><h1>{name}</h1></main></PageTransition>; }
 
 export function AppRoutes() {
   useLenis();
   const location = useLocation();
+  const isAdmin = location.pathname.startsWith("/admin");
   return <>
-    <ScrollProgress /><CustomCursor /><Navbar />
+    {!isAdmin && <><ScrollProgress/><CustomCursor/><Navbar/></>}
     <AnimatePresence mode="wait"><Routes location={location} key={location.pathname}>
       <Route path="/" element={<HomePage />} />
       <Route path="/portfolio" element={<PortfolioPage />} />
@@ -33,9 +36,10 @@ export function AppRoutes() {
       <Route path="/about" element={<AboutPage />} />
       <Route path="/services" element={<ServicesPage />} />
       <Route path="/contact" element={<ContactPage />} />
+      <Route path="/admin/*" element={<Suspense fallback={<main className="admin-loading">Loading admin</main>}><AdminRoutes/></Suspense>} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes></AnimatePresence>
-    <Footer /><Toaster theme="dark" richColors />
+    {!isAdmin && <Footer/>}<Toaster theme="dark" richColors />
   </>;
 }
 
