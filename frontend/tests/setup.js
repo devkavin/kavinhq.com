@@ -7,6 +7,7 @@ class IntersectionObserverStub {
 }
 
 globalThis.IntersectionObserver = IntersectionObserverStub;
+globalThis.ResizeObserver = class { observe() {} unobserve() {} disconnect() {} };
 
 window.matchMedia ||= (query) => ({
   matches: false,

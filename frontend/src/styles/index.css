@@ -48,5 +48,30 @@ img { display: block; max-width: 100%; }
 .marquee-group { display: flex; align-items: center; }
 .marquee-group span { display: flex; align-items: center; gap: 2rem; padding: 1rem; font: 600 clamp(1.1rem,2vw,1.7rem)/1 "Clash Display", sans-serif; white-space: nowrap; }
 .marquee-group i { width: 6px; height: 6px; border: 1px solid #00ff87; transform: rotate(45deg); }
+.site-nav { position: fixed; z-index: 100; top: 0; left: 0; right: 0; height: 82px; display: flex; align-items: center; justify-content: space-between; gap: 2rem; padding: 0 clamp(1.2rem,4vw,4.5rem); border-bottom: 1px solid transparent; transition: background .35s, border-color .35s, height .35s; }
+.site-nav.is-scrolled { height: 70px; background: rgba(5,7,10,.75); backdrop-filter: blur(18px); border-color: rgba(255,255,255,.07); }
+.desktop-nav { display: flex; align-items: center; gap: 2rem; }
+.desktop-nav a { position: relative; padding: .75rem 0; color: #94a3b8; font: 500 11px/1 "JetBrains Mono", monospace; letter-spacing: .16em; text-transform: uppercase; transition: color .25s; }
+.desktop-nav a:hover, .desktop-nav a[aria-current="page"] { color: #f8fafc; }
+.nav-underline { position: absolute; left: 0; right: 0; bottom: .2rem; height: 1px; background: #00f0ff; box-shadow: 0 0 10px #00f0ff; }
+.button { min-height: 48px; display: inline-flex; align-items: center; justify-content: center; gap: .6rem; border: 1px solid rgba(255,255,255,.12); border-radius: 999px; padding: .85rem 1.35rem; font: 600 11px/1 "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; transition: transform .35s, color .35s, background .35s, border-color .35s; }
+.button:hover { transform: translateY(-2px); border-color: rgba(0,240,255,.5); }
+.button-primary { color: #031015; background: #00f0ff; border-color: #00f0ff; box-shadow: 0 12px 35px rgba(0,240,255,.16); }
+.button-primary:hover { background: #00ff87; border-color: #00ff87; }
+.menu-toggle { display: none; border: 0; background: none; padding: .5rem; }
+.mobile-menu { position: fixed; z-index: 150; inset: 0; display: grid; place-items: center; background: rgba(5,7,10,.97); }
+.mobile-menu > button { position: absolute; top: 1.4rem; right: 1.4rem; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; padding: .75rem; background: #0b0f17; }
+.mobile-menu nav { display: grid; gap: 1rem; text-align: center; }
+.mobile-menu nav a { font: 600 clamp(2.4rem,10vw,4rem)/1.1 "Clash Display", sans-serif; }
+.site-footer { position: relative; display: grid; grid-template-columns: 2fr 1fr 1fr auto; gap: 3rem; padding: 5rem clamp(1.2rem,6vw,7rem) 2rem; border-top: 1px solid rgba(255,255,255,.08); background: #070a10; }
+.site-footer p { max-width: 30rem; color: #94a3b8; line-height: 1.7; }
+.site-footer > div:not(:first-child) { display: flex; flex-direction: column; gap: .8rem; color: #94a3b8; font-size: .9rem; }
+.footer-label { color: #00f0ff; font: 600 10px/1 "JetBrains Mono", monospace; letter-spacing: .2em; text-transform: uppercase; margin-bottom: .6rem; }
+.back-top { align-self: start; display: grid; place-items: center; width: 48px; height: 48px; border: 1px solid rgba(255,255,255,.12); border-radius: 50%; background: rgba(15,23,42,.6); }
+.site-footer small { grid-column: 1/-1; color: #64748b; padding-top: 2rem; border-top: 1px solid rgba(255,255,255,.06); }
+.placeholder-page { min-height: 80vh; display: grid; place-items: center; padding: 9rem 1.2rem 4rem; }
+.placeholder-page h1 { font: 600 clamp(4rem,12vw,10rem)/.85 "Clash Display", sans-serif; }
+@media (max-width: 860px) { .desktop-nav, .nav-cta-wrap { display: none; } .menu-toggle { display: inline-flex; } .site-footer { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .site-nav { height: 70px; } .site-footer { grid-template-columns: 1fr; gap: 2rem; } .site-footer small { grid-column: 1; } }
 @media (pointer: fine) { body, a, button, select { cursor: none; } }
 @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .001ms !important; animation-iteration-count: 1 !important; } body, a, button, select { cursor: auto; } }
