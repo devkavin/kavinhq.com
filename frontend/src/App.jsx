@@ -11,6 +11,7 @@ import ScrollProgress from "./components/motion/ScrollProgress";
 import { AuthProvider } from "./context/AuthContext";
 import { SettingsProvider } from "./context/SettingsContext";
 import useLenis from "./hooks/useLenis";
+import HomePage from "./pages/HomePage";
 
 function Placeholder({ name }) { return <PageTransition><main className="placeholder-page"><h1>{name}</h1></main></PageTransition>; }
 
@@ -20,7 +21,7 @@ export function AppRoutes() {
   return <>
     <ScrollProgress /><CustomCursor /><Navbar />
     <AnimatePresence mode="wait"><Routes location={location} key={location.pathname}>
-      <Route path="/" element={<Placeholder name="KAVINHQ" />} />
+      <Route path="/" element={<HomePage />} />
       <Route path="/portfolio" element={<Placeholder name="Portfolio" />} />
       <Route path="/portfolio/:slug" element={<Placeholder name="Case Study" />} />
       <Route path="/about" element={<Placeholder name="About" />} />
