@@ -15,6 +15,9 @@ import HomePage from "./pages/HomePage";
 import PortfolioPage from "./pages/PortfolioPage";
 import CaseStudyPage from "./pages/CaseStudyPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import AboutPage from "./pages/AboutPage";
+import ServicesPage from "./pages/ServicesPage";
+import ContactPage from "./pages/ContactPage";
 
 function Placeholder({ name }) { return <PageTransition><main className="placeholder-page"><h1>{name}</h1></main></PageTransition>; }
 
@@ -27,9 +30,9 @@ export function AppRoutes() {
       <Route path="/" element={<HomePage />} />
       <Route path="/portfolio" element={<PortfolioPage />} />
       <Route path="/portfolio/:slug" element={<CaseStudyPage />} />
-      <Route path="/about" element={<Placeholder name="About" />} />
-      <Route path="/services" element={<Placeholder name="Services" />} />
-      <Route path="/contact" element={<Placeholder name="Contact" />} />
+      <Route path="/about" element={<AboutPage />} />
+      <Route path="/services" element={<ServicesPage />} />
+      <Route path="/contact" element={<ContactPage />} />
       <Route path="*" element={<NotFoundPage />} />
     </Routes></AnimatePresence>
     <Footer /><Toaster theme="dark" richColors />
