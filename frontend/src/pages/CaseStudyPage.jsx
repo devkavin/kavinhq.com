@@ -32,7 +32,24 @@ export default function CaseStudyPage() {
   if (error) return <PageTransition><main className="not-found"><Seo title="Project Unavailable" description="This KAVINHQ project could not be loaded." noindex/><span>CONNECTION ISSUE</span><h1>PROJECT UNAVAILABLE</h1><p>{error}</p><button className="button button-primary" type="button" onClick={() => setRetry((value) => value + 1)} data-testid="case-retry">Try again</button></main></PageTransition>;
   if (!project) return <main className="case-loading"><span>Loading project</span></main>;
   const message = `${settings.whatsapp_message}\n\nI am interested in a project like ${project.title}.`;
-  return <PageTransition><Seo title={project.title} description={project.description} image={project.image_url}/><main className="case-page">
+  const projectSchema = {
+    "@context": "https://schema.org",
+    "@type": "CreativeWork",
+    "name": project.title,
+    "headline": project.title,
+    "description": project.description,
+    "image": project.image_url,
+    "author": {
+      "@type": "Person",
+      "name": "Kavin"
+    },
+    "publisher": {
+      "@type": "Organization",
+      "name": "KAVINHQ",
+      "url": "https://www.kavinhq.com"
+    }
+  };
+  return <PageTransition><Seo title={project.title} description={project.description} image={project.image_url} type="article" schema={projectSchema}/><main className="case-page">
     <header className="case-header page-shell">
       <Link className="case-back" to="/portfolio" data-testid="case-back"><ArrowLeft size={15}/> Back to portfolio</Link>
       <div className="case-eyebrow"><span>{project.category}</span><span>{project.year}</span></div>
