@@ -23,7 +23,7 @@ export default function Hero() {
     <motion.div className="hero-orb" style={reduced ? undefined : { y: orbY }} aria-hidden="true" />
     <div className="hero-copy">
       <div className="availability"><span /> AVAILABLE FOR NEW PROJECTS</div>
-      <h1 aria-label="WEBSITES THAT DEMAND ATTENTION.">{lines.map((line, index) => <span className="heading-mask" key={line}><motion.span className={line === "DEMAND" ? "text-gradient" : ""} initial={reduced ? false : { y: "112%" }} animate={{ y: 0 }} transition={reduced ? { duration: 0 } : { delay: .12 + index * .1, duration: .9, ease: [0.16,1,.3,1] }}>{line}</motion.span></span>)}</h1>
+      <h1 aria-label="WEBSITES THAT DEMAND ATTENTION.">{lines.map((line, index) => <span className="heading-mask" key={line}><motion.span className={line === "DEMAND" ? "text-outline" : ""} initial={reduced ? false : { y: "112%" }} animate={{ y: 0 }} transition={reduced ? { duration: 0 } : { delay: .12 + index * .1, duration: .9, ease: [0.16,1,.3,1] }}>{line}</motion.span></span>)}</h1>
       <motion.p initial={reduced ? false : { opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={reduced ? { duration: 0 } : { delay: .55 }}>I'm Kavin. I design and engineer landing pages, e-commerce stores and custom web experiences that are fast, SEO-ready and impossible to scroll past.</motion.p>
       <motion.div className="hero-actions" initial={reduced ? false : { opacity: 0 }} animate={{ opacity: 1 }} transition={reduced ? { duration: 0 } : { delay: .7 }}>
         <MagneticButton><a className="button button-primary" href={buildWhatsAppUrl(settings.whatsapp_number, settings.whatsapp_message)} target="_blank" rel="noreferrer" data-testid="hero-cta-whatsapp" data-cursor="CHAT"><MessageCircle size={16}/> Start a Project</a></MagneticButton>
@@ -32,7 +32,7 @@ export default function Hero() {
     </div>
     <div className="hero-visual-wrap">
       <TiltVisual className="hero-visual glass">
-        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?crop=entropy&cs=srgb&fm=webp&q=80&w=900" alt="A dark web development workspace" width="900" height="600" fetchpriority="high" />
+        <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?crop=entropy&cs=srgb&fm=webp&q=80&w=900" alt="Abstract dark geometric visualization" width="900" height="600" fetchpriority="high" />
         <div className="visual-scan" />
       </TiltVisual>
       <div className="floating-badge badge-top glass">SEO-FIRST BUILDS</div>
