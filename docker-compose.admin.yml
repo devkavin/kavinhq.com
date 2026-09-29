@@ -8,8 +8,8 @@ services:
       JWT_SECRET: ${JWT_SECRET:?JWT_SECRET is required}
       ADMIN_EMAIL: ${ADMIN_EMAIL:?ADMIN_EMAIL is required}
       ADMIN_PASSWORD: ${ADMIN_PASSWORD:?ADMIN_PASSWORD is required}
-      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8080}
-      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8080}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:8081}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:8081}
       TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-false}
     ports:
       - "8001:8001"
@@ -30,4 +30,4 @@ services:
       backend:
         condition: service_healthy
     ports:
-      - "8080:80"
+      - "8081:80"

@@ -24,6 +24,6 @@ With the API running, execute `powershell -ExecutionPolicy Bypass -File scripts/
 
 Copy `.env.example` to `.env`, provide the hosted MySQL URL and secrets, then run `docker compose up --build`. The public site is served at `http://localhost`.
 
-For the local admin workflow, run `docker compose -f docker-compose.admin.yml up --build` and open `http://localhost:8080/admin`.
+For the local admin workflow, run `docker compose -f docker-compose.admin.yml up --build` and open `http://localhost:8081/admin`.
 
 See [DEPLOY.md](DEPLOY.md) for Coolify setup, environment details, MySQL TLS examples, and production security guidance.

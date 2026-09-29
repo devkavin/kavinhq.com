@@ -12,7 +12,7 @@ services:
       CORS_ORIGINS: ${CORS_ORIGINS:?CORS_ORIGINS is required}
       TRUST_PROXY_HEADERS: ${TRUST_PROXY_HEADERS:-true}
     healthcheck:
-      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/api/health', timeout=5)"]
+      test: [ "CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8001/api/health', timeout=5)" ]
       interval: 15s
       timeout: 8s
       retries: 5
@@ -32,9 +32,9 @@ services:
     # Port binding for local development only.
     # On Coolify, Traefik routes traffic — no host port needed.
     ports:
-      - "${FRONTEND_PORT:-8080}:80"
+      - "${FRONTEND_PORT:-8081}:80"
     healthcheck:
-      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/"]
+      test: [ "CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1/" ]
       interval: 15s
       timeout: 5s
       retries: 5

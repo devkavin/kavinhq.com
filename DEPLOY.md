@@ -30,9 +30,9 @@ The frontend image is built with Node 20 and served by nginx. Static assets rece
 The local admin compose file connects to the same hosted MySQL database while exposing the site only on your machine.
 
 1. Copy `.env.example` to `.env`.
-2. Set `FRONTEND_URL=http://localhost:8080`, `CORS_ORIGINS=http://localhost:8080`, and `TRUST_PROXY_HEADERS=false`.
+2. Set `FRONTEND_URL=http://localhost:8081`, `CORS_ORIGINS=http://localhost:8081`, and `TRUST_PROXY_HEADERS=false`.
 3. Run `docker compose -f docker-compose.admin.yml up --build`.
-4. Open `http://localhost:8080/admin`. The API is also available at `http://localhost:8001/api/health` for diagnostics.
+4. Open `http://localhost:8081/admin`. The API is also available at `http://localhost:8001/api/health` for diagnostics.
 
 Stop the local stack with `docker compose -f docker-compose.admin.yml down`. This removes containers and the internal Docker network only. It does not remove hosted MySQL data.
 
